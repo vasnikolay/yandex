@@ -13,6 +13,10 @@
     max-height: 47vh;
     overflow-y: scroll;
 }
+.item{
+    display: flex;
+    align-items: center;
+}
 
 .sum{
     display: flex;

@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import styles from './App.module.css';
-import AppHeader from "./components/app-header/app-header";
-import BurgerIngredients from "./components/burger-ingredients/burger-ingredients";
-import BurgerConstructor from "./components/burger-constructor/burger-constructor";
-import {Ingredient} from "./models/interface/Ingredient";
-import data from "./utils/data.json";
+import styles from './app.module.css';
+import AppHeader from "../app-header/app-header";
+import BurgerIngredients from "../burger-ingredients/burger-ingredients";
+import BurgerConstructor from "../burger-constructor/burger-constructor";
+import {Ingredient} from "../../models/interface/Ingredient";
+import data from "../../utils/data.json";
 
 export enum IngredientsType {
     Main='main',
@@ -34,7 +34,7 @@ const  App = () => {
                 ingredientsMain:filteredIngredients?.main || data
             })
         } catch (e) {
-            throw new Error('Всё плохо')
+            console.log('Всё плохо')
         }
     }
 
