@@ -1,0 +1,19 @@
+.nav{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.item{
+    display: flex;
+    flex: 1;
+}
+
+.item_center{
+    composes: item;
+    justify-content: center;
+}
+
+.item_right{
+    composes: item;
+    justify-content: flex-end;
+}
