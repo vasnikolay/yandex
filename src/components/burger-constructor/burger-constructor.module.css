@@ -1,0 +1,30 @@
+.section{
+    display: flex;
+    flex-direction: column;
+}
+
+.list {
+    composes: section;
+    gap: 16px;
+}
+
+.list_main{
+    composes: list;
+    max-height: 47vh;
+    overflow-y: scroll;
+}
+.item{
+    display: flex;
+    align-items: center;
+}
+
+.sum{
+    display: flex;
+    align-items: center;
+    align-self: flex-end;
+}
+
+.price{
+    display: flex;
+    align-items: center;
+}

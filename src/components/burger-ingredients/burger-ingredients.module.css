@@ -1,0 +1,11 @@
+.section{
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 78vh;
+    overflow: hidden;
+}
+
+.item{
+    overflow-y: scroll;
+}
