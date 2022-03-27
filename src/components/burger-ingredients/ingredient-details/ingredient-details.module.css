@@ -1,0 +1,23 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.info{
+     display: flex;
+    gap: 20px;
+ }
+
+.img{
+    width: 480px;
+    height: 240px;
+}
+.name{
+    margin-top: 0;
+}
+
+.info__item{
+  composes: content;
+}

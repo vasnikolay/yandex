@@ -2,6 +2,7 @@ import BurgerIngredientsTabs from "./burger-ingredients-tabs/burger-ingredients-
 import BurgerIngredientsSection from "./burger-ingredients-section/burger-ingredients-section";
 import {Ingredient} from "../../models/interface/Ingredient";
 import styles from './burger-ingredients.module.css'
+import PropTypes from 'prop-types';
 
 const TABS = {
     currentTab: 'rolls',
@@ -27,21 +28,24 @@ interface BurgerIngredientsProps{
         main: Ingredient[]
         sauce:Ingredient[]
         bun:Ingredient[]
-    }
+    },
+    onClick: (ingredient:Ingredient)=>void
 }
 
-const BurgerIngredients = ({filterIngredients}:BurgerIngredientsProps) => {
+BurgerIngredients.propTypes = {
+    filterIngredients: PropTypes.object,
+    onClick:PropTypes.func
+}
 
+export default function BurgerIngredients ({filterIngredients, onClick}:BurgerIngredientsProps) {
     return(
         <section className={`pr-5 pl-5 ${styles.section}`}>
             <BurgerIngredientsTabs tabs={TABS} />
             <div className={styles.item}>
-                <BurgerIngredientsSection ingredients={filterIngredients.bun} label={'Булки'}/>
-                <BurgerIngredientsSection ingredients={filterIngredients.sauce} label={'Соусы'}/>
-                <BurgerIngredientsSection ingredients={filterIngredients.main} label={'Начинки'}/>
+                <BurgerIngredientsSection ingredients={filterIngredients.bun} onClick={onClick} label={'Булки'}/>
+                <BurgerIngredientsSection ingredients={filterIngredients.sauce} onClick={onClick} label={'Соусы'}/>
+                <BurgerIngredientsSection ingredients={filterIngredients.main} onClick={onClick} label={'Начинки'}/>
             </div>
         </section>
     )
 }
-
-export default BurgerIngredients

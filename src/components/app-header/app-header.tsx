@@ -2,7 +2,7 @@ import AppHeaderItem, {IconNames} from "./app-header-item/app-header-item"
 import {Logo} from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from './app-header.module.css'
 
-const AppHeader = () => {
+export default function AppHeader() {
     return (
         <header className='pt-4 pb-4'>
             <nav className={styles.nav}>
@@ -20,4 +20,3 @@ const AppHeader = () => {
         </header>
     )
 }
-export default AppHeader
