@@ -8,6 +8,8 @@ import Modal from "../modal/modal";
 import IngredientDetails from "../burger-ingredients/ingredient-details/ingredient-details";
 import OrderDetails from "../burger-constructor/order-details/order-details";
 
+const INGREDIENTS_URL = 'https://norma.nomoreparties.space/api/ingredients'
+
 export enum IngredientsType {
     Main='main',
     Sauce='sauce',
@@ -37,7 +39,10 @@ export default function App() {
 
     const fetchIngredientsData = async ():Promise<void> => {
         try {
-            const response = await fetch('https://norma.nomoreparties.space/api/ingredients')
+            const response = await fetch(INGREDIENTS_URL)
+            if (!response.ok) {
+                throw new Error('Ответ сети был не ok.');
+            }
             const {data:ingredients} = await response.json()
             const bun = ingredients.find((ingredient:Ingredient)=>ingredient.type === IngredientsType.Bun)
             const filteredIngredients = bun && filterIngredientsToConstructor(ingredients,bun)
@@ -92,9 +97,22 @@ export default function App() {
             }
     }
 
+    const onEscapeClick = (event: KeyboardEvent):void => {
+        if (event.key === 'Escape'){
+            onHideClick()
+        }
+    }
+
     useEffect(() => {
         fetchIngredientsData()
     },[]);
+
+    useEffect(() => {
+       window.document.addEventListener('keydown', onEscapeClick)
+        return () => {
+           window.document.removeEventListener('keydown', onEscapeClick)
+       }
+    },[state.isOrderModalOpen,state.isIngredientModalOpen]);
 
 
 
