@@ -58,7 +58,7 @@ export default function App() {
 
     const getOrderId = async (orderIds: string[]): Promise<void> => {
         try {
-            const response = await fetch(`${baseUrl}/ordersы`, {
+            const response = await fetch(`${baseUrl}/orders`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
