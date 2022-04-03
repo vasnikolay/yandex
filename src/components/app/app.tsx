@@ -8,9 +8,9 @@ import Modal from "../modal/modal";
 import IngredientDetails from "../burger-ingredients/ingredient-details/ingredient-details";
 import OrderDetails from "../burger-constructor/order-details/order-details";
 import {AppContext} from "../../service/AppContext";
+import {checkResponse} from "../../utils/check-response";
 
-const INGREDIENTS_URL = 'https://norma.nomoreparties.space/api/ingredients'
-const ORDER_URL = 'https://norma.nomoreparties.space/api/orders'
+const baseUrl = 'https://norma.nomoreparties.space/api'
 
 export enum IngredientsType {
     Main = 'main',
@@ -25,6 +25,13 @@ interface AppState {
     ingredient?: Ingredient
     orderNumber: number | undefined
 }
+interface OrderResponse{
+    name: string,
+    "order": {
+        "number": number
+    },
+    "success": boolean
+}
 
 export default function App() {
     const [state, setState] = useState<AppState>({
@@ -37,43 +44,37 @@ export default function App() {
 
     const fetchIngredientsData = async (): Promise<void> => {
         try {
-            const response = await fetch(INGREDIENTS_URL)
-            if (!response.ok) {
-                throw new Error('Ответ сети был не ok.');
-            }
-            const {data: ingredients} = await response.json()
+            const response = await fetch(`${baseUrl}/ingredients`)
+            const {data: ingredients} = await checkResponse(response)
 
             setState({
                 ...state,
                 ingredients,
             })
         } catch (error: any) {
-            console.log(error.message)
+            console.log(error)
         }
     }
 
     const getOrderId = async (orderIds: string[]): Promise<void> => {
         try {
-            const response = await fetch(ORDER_URL, {
+            const response = await fetch(`${baseUrl}/ordersы`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
                     ingredients: orderIds
                 })
             });
-            if (!response.ok) {
-                throw new Error('Ответ сети был не ok.');
-            }
-            const data = await response.json()
+            const data = await checkResponse<OrderResponse>(response)
             setState(((prevState: AppState) => ({
                 ...prevState,
                 isOrderModalOpen: true,
                 orderNumber: data.order.number
             })))
         } catch (error: any) {
-            console.log(error.message)
+            console.log(error)
         }
 
     }
