@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Tab} from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from './burger-ingredients-tabs.module.css'
+import PropTypes from 'prop-types';
 
 interface TabItem {
     id:string,
@@ -15,8 +16,14 @@ interface Tabs {
 interface BurgerIngredientsTabProps {
     tabs: Tabs
 }
+BurgerIngredientsTabs.propTypes = {
+    tabs:PropTypes.shape({
+        currentTab: PropTypes.string,
+        list: PropTypes.array
+    })
+}
 
-const BurgerIngredientsTabs = ({tabs}:  BurgerIngredientsTabProps) => {
+export default function BurgerIngredientsTabs ({tabs}:  BurgerIngredientsTabProps){
     const [current, setCurrent] = useState(tabs.currentTab)
     return (
         <div className={styles.tabs}>
@@ -34,5 +41,3 @@ const BurgerIngredientsTabs = ({tabs}:  BurgerIngredientsTabProps) => {
         </div>
     )
 }
-
-export default BurgerIngredientsTabs

@@ -1,5 +1,6 @@
 import {BurgerIcon, ListIcon, ProfileIcon} from "@ya.praktikum/react-developer-burger-ui-components"
 import styles from './app-header-item.module.css'
+import PropTypes from 'prop-types';
 
 type IconTypes = 'secondary' | 'primary' | 'error' | 'success';
 
@@ -15,7 +16,13 @@ interface ItemProps {
     text: string
 }
 
-const AppHeaderItem = ({iconName,type,text}: ItemProps) => {
+AppHeaderItem.propTypes = {
+    iconName:PropTypes.number,
+    type:PropTypes.string,
+    text:PropTypes.string
+}
+
+export default function AppHeaderItem  ({iconName,type,text}: ItemProps) {
     const displayIcon = (iconName: IconNames, type: IconTypes): JSX.Element => {
         switch (iconName) {
             case IconNames.Burger:
@@ -39,5 +46,3 @@ const AppHeaderItem = ({iconName,type,text}: ItemProps) => {
 }
 
 
-
-export default AppHeaderItem

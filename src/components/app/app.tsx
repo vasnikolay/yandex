@@ -4,7 +4,11 @@ import AppHeader from "../app-header/app-header";
 import BurgerIngredients from "../burger-ingredients/burger-ingredients";
 import BurgerConstructor from "../burger-constructor/burger-constructor";
 import {Ingredient} from "../../models/interface/Ingredient";
-import data from "../../utils/data.json";
+import Modal from "../modal/modal";
+import IngredientDetails from "../burger-ingredients/ingredient-details/ingredient-details";
+import OrderDetails from "../burger-constructor/order-details/order-details";
+
+const INGREDIENTS_URL = 'https://norma.nomoreparties.space/api/ingredients'
 
 export enum IngredientsType {
     Main='main',
@@ -12,31 +16,70 @@ export enum IngredientsType {
     Bun='bun'
 }
 
-const  App = () => {
+interface AppState{
+    ingredients:Ingredient[],
+    ingredientTop?:Ingredient,
+    ingredientBottom?:Ingredient,
+    ingredientsMain:Ingredient[],
+    isIngredientModalOpen:boolean,
+    isOrderModalOpen:boolean,
+    ingredient?:Ingredient
+}
 
-    const [state, setState] = useState<any>({
+export default function App() {
+    const [state, setState] = useState<AppState>({
         ingredients:[],
         ingredientTop:undefined,
         ingredientBottom:undefined,
-        ingredientsMain:[]
+        ingredientsMain:[],
+        isIngredientModalOpen:false,
+        isOrderModalOpen:false,
+        ingredient:undefined
     });
 
     const fetchIngredientsData = async ():Promise<void> => {
         try {
-            // const response = await fetch('url')
-            // const ingredients = await response.json()
-            const bun = data.find((ingredient:Ingredient)=>ingredient.type === IngredientsType.Bun)
-            const filteredIngredients = bun && filterIngredientsToConstructor(data,bun)
+            const response = await fetch(INGREDIENTS_URL)
+            if (!response.ok) {
+                throw new Error('Ответ сети был не ok.');
+            }
+            const {data:ingredients} = await response.json()
+            const bun = ingredients.find((ingredient:Ingredient)=>ingredient.type === IngredientsType.Bun)
+            const filteredIngredients = bun && filterIngredientsToConstructor(ingredients,bun)
             setState({
-                ingredients: data,
+                ...state,
+                ingredients: ingredients,
                 ingredientTop: filteredIngredients?.bunTop,
                 ingredientBottom:filteredIngredients?.bunBottom,
-                ingredientsMain:filteredIngredients?.main || data
+                ingredientsMain:filteredIngredients?.main || ingredients
             })
-        } catch (e) {
-            console.log('Всё плохо')
+        } catch (error: any) {
+            console.log(error.message)
         }
     }
+
+    const onIngredientClick = React.useCallback((ingredient:Ingredient) => {
+        setState(((prevState: AppState) => ({
+            ...prevState,
+            isIngredientModalOpen:true,
+            ingredient:ingredient
+        })))
+    },[state.isIngredientModalOpen])
+
+    const onOrderClick = React.useCallback(() => {
+        setState(((prevState: AppState) => ({
+            ...prevState,
+            isOrderModalOpen:true,
+        })))
+    },[state.isOrderModalOpen])
+
+    const onHideClick = React.useCallback(() => {
+        setState(((prevState: AppState) => ({
+            ...prevState,
+            isIngredientModalOpen:false,
+            isOrderModalOpen:false,
+        })))
+    },[])
 
     const filterIngredients = () => {
         return  {
@@ -54,9 +97,22 @@ const  App = () => {
             }
     }
 
+    const onEscapeClick = (event: KeyboardEvent):void => {
+        if (event.key === 'Escape'){
+            onHideClick()
+        }
+    }
+
     useEffect(() => {
         fetchIngredientsData()
     },[]);
+
+    useEffect(() => {
+       window.document.addEventListener('keydown', onEscapeClick)
+        return () => {
+           window.document.removeEventListener('keydown', onEscapeClick)
+       }
+    },[state.isOrderModalOpen,state.isIngredientModalOpen]);
 
 
 
@@ -66,15 +122,29 @@ const  App = () => {
         <main className={'pt-10'}>
             <h1 className={'text text_type_main-medium pl-5'}>Соберите бургер</h1>
             <div className={`${styles.main} pt-5`}>
-                <BurgerIngredients filterIngredients={filterIngredients()}/>
+                <BurgerIngredients
+                    onClick={onIngredientClick}
+                    filterIngredients={filterIngredients()}/>
                 <BurgerConstructor
+                    onClick={onOrderClick}
                     ingredients={state.ingredientsMain}
                     bunTop={state.ingredientTop}
                     bunBottom={state.ingredientBottom} />
             </div>
         </main>
+        {
+           (state.isIngredientModalOpen && state.ingredient) &&
+            <Modal title={'Детали ингредиента'} onHideClick={onHideClick}>
+                <IngredientDetails ingredient={state.ingredient}/>
+            </Modal>
+        }
+        {
+           state.isOrderModalOpen &&
+           <Modal onHideClick={onHideClick}>
+                <OrderDetails/>
+            </Modal>
+        }
+
     </div>
   );
 }
-
-export default App;

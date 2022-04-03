@@ -7,16 +7,25 @@ import {Ingredient} from "../../models/interface/Ingredient";
 import styles from './burger-constructor.module.css'
 import {Button} from "@ya.praktikum/react-developer-burger-ui-components";
 import React from "react";
+import PropTypes from 'prop-types';
 
 interface BurgerConstructorProps {
     ingredients:Ingredient[],
-    bunTop:Ingredient,
-    bunBottom:Ingredient
+    bunTop:Ingredient | undefined,
+    bunBottom:Ingredient | undefined
+    onClick:() => void
+}
+
+BurgerConstructor.propTypes = {
+    ingredients: PropTypes.arrayOf(PropTypes.object),
+    bunTop:PropTypes.object,
+    bunBottom:PropTypes.object,
+    onClick:PropTypes.func
 }
 
 
 
-const BurgerConstructor = ({ingredients,bunTop,bunBottom}:BurgerConstructorProps) => {
+export default function BurgerConstructor({ingredients,bunTop,bunBottom, onClick}:BurgerConstructorProps){
     const calculateSum = ():number => {
       return ingredients.reduce((sum:number, current:Ingredient)=>sum + current.price, 0)
     }
@@ -64,7 +73,7 @@ const BurgerConstructor = ({ingredients,bunTop,bunBottom}:BurgerConstructorProps
                     <span className={'pr-2 text text_type_digits-medium'}>{calculateSum()}</span>
                     <CurrencyIcon type="primary" />
                 </div>
-                <Button type="primary" size="large">
+                <Button onClick={()=>onClick()} type="primary" size="large">
                     Оформить заказ
                 </Button>
             </div>
@@ -72,4 +81,3 @@ const BurgerConstructor = ({ingredients,bunTop,bunBottom}:BurgerConstructorProps
         </section>
     )
 }
-export default BurgerConstructor
