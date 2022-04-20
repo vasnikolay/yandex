@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import styles from './app.module.css';
 import AppHeader from "../app-header/app-header";
 import BurgerIngredients from "../burger-ingredients/burger-ingredients";
@@ -7,10 +7,12 @@ import {Ingredient} from "../../models/interface/Ingredient";
 import Modal from "../modal/modal";
 import IngredientDetails from "../burger-ingredients/ingredient-details/ingredient-details";
 import OrderDetails from "../burger-constructor/order-details/order-details";
-import {AppContext} from "../../service/AppContext";
-import {checkResponse} from "../../utils/check-response";
+import {useAppDispatch, useAppSelector} from "../../hooks/redux";
+import {fetchIngredients} from "../../store/reducers/ActionCreators";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import {appReducer} from "../../store/reducers/ingredientsSlice";
 
-const baseUrl = 'https://norma.nomoreparties.space/api'
 
 export enum IngredientsType {
     Main = 'main',
@@ -18,126 +20,58 @@ export enum IngredientsType {
     Bun = 'bun'
 }
 
-interface AppState {
-    ingredients: Ingredient[],
-    isIngredientModalOpen: boolean,
-    isOrderModalOpen: boolean,
-    ingredient?: Ingredient
-    orderNumber: number | undefined
-}
-interface OrderResponse{
-    name: string,
-    "order": {
-        "number": number
-    },
-    "success": boolean
-}
 
 export default function App() {
-    const [state, setState] = useState<AppState>({
-        ingredients: [],
-        isIngredientModalOpen: false,
-        isOrderModalOpen: false,
-        ingredient: undefined,
-        orderNumber: undefined
-    });
 
-    const fetchIngredientsData = async (): Promise<void> => {
-        try {
-            const response = await fetch(`${baseUrl}/ingredients`)
-            const {data: ingredients} = await checkResponse(response)
-
-            setState({
-                ...state,
-                ingredients,
-            })
-        } catch (error: any) {
-            console.log(error)
-        }
-    }
-
-    const getOrderId = async (orderIds: string[]): Promise<void> => {
-        try {
-            const response = await fetch(`${baseUrl}/orders`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    ingredients: orderIds
-                })
-            });
-            const data = await checkResponse<OrderResponse>(response)
-            setState(((prevState: AppState) => ({
-                ...prevState,
-                isOrderModalOpen: true,
-                orderNumber: data.order.number
-            })))
-        } catch (error: any) {
-            console.log(error)
-        }
-
-    }
-
-    const onIngredientClick = React.useCallback((ingredient: Ingredient) => {
-        setState(((prevState: AppState) => ({
-            ...prevState,
-            isIngredientModalOpen: true,
-            ingredient
-        })))
-    }, [state.isIngredientModalOpen])
-
-    const onOrderClick = React.useCallback((orderIds: string[]) => {
-        getOrderId(orderIds)
-    }, [state.isOrderModalOpen])
-
-    const onHideClick = React.useCallback(() => {
-        setState(((prevState: AppState) => ({
-            ...prevState,
-            isIngredientModalOpen: false,
-            isOrderModalOpen: false,
-        })))
-    }, [])
+    const dispatch = useAppDispatch()
+    const {
+        ingredients,
+        isIngredientModalOpen,
+        isOrderModalOpen,
+        ingredient,
+        orderNumber,
+    } = useAppSelector(state => state.appReducer)
 
     const filterIngredients = () => {
         return {
-            main: state.ingredients.filter((ingredient: Ingredient) => ingredient.type === IngredientsType.Main),
-            sauce: state.ingredients.filter((ingredient: Ingredient) => ingredient.type === IngredientsType.Sauce),
-            bun: state.ingredients.filter((ingredient: Ingredient) => ingredient.type === IngredientsType.Bun)
+            main: ingredients.filter((ingredient: Ingredient) => ingredient.type === IngredientsType.Main),
+            sauce: ingredients.filter((ingredient: Ingredient) => ingredient.type === IngredientsType.Sauce),
+            bun: ingredients.filter((ingredient: Ingredient) => ingredient.type === IngredientsType.Bun)
         }
     }
 
+
+    // const handleDrop = (item:Ingredient) => {
+    //
+    // };
+
     useEffect(() => {
-        fetchIngredientsData()
+        dispatch(fetchIngredients())
     }, []);
 
     return (
         <div className={styles.wrapper}>
             <AppHeader/>
+            <DndProvider backend={HTML5Backend}>
             <main className={'pt-10'}>
                 <h1 className={'text text_type_main-medium pl-5'}>Соберите бургер</h1>
                 <div className={`${styles.main} pt-5`}>
                     <BurgerIngredients
-                        onClick={onIngredientClick}
                         filterIngredients={filterIngredients()}/>
-                    {state.ingredients.length &&
-                    <AppContext.Provider value={state.ingredients}>
-                        <BurgerConstructor
-                            onClick={onOrderClick}/>
-                    </AppContext.Provider>
-                    }
+                    <BurgerConstructor/>
                 </div>
             </main>
+            </DndProvider>
             {
-                (state.isIngredientModalOpen && state.ingredient) &&
-                <Modal title={'Детали ингредиента'} onHideClick={onHideClick}>
-                    <IngredientDetails ingredient={state.ingredient}/>
+                (isIngredientModalOpen && ingredient) &&
+                <Modal title={'Детали ингредиента'}>
+                    <IngredientDetails ingredient={ingredient}/>
                 </Modal>
             }
             {
-                state.isOrderModalOpen && state.orderNumber &&
-                <Modal onHideClick={onHideClick}>
-                    <OrderDetails orderNumber={state.orderNumber}/>
+                isOrderModalOpen && orderNumber &&
+                <Modal>
+                    <OrderDetails orderNumber={orderNumber}/>
                 </Modal>
             }
 

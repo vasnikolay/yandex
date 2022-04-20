@@ -12,6 +12,7 @@ export interface Ingredient {
     image_large: string;
     __v: number;
     constructorType?: ConstructorType
+    code:string
 }
 
 export type ConstructorType = "top" | "bottom" | undefined
