@@ -6,23 +6,20 @@ import PropTypes from 'prop-types';
 interface BurgerIngredientsSectionProps{
     ingredients: Ingredient[],
     label:string,
-    onClick:(ingredient:Ingredient)=>void
 }
 
 BurgerIngredientsSection.propTypes = {
     ingredients:PropTypes.arrayOf(PropTypes.object),
     label:PropTypes.string,
-    onClick:PropTypes.func
 }
 
-export default function BurgerIngredientsSection({ingredients, label, onClick}: BurgerIngredientsSectionProps){
+export default function BurgerIngredientsSection({ingredients, label}: BurgerIngredientsSectionProps){
     return(
         <div>
             <h2 className={'mb-6 mt-10 text text_type_main-large'}>{label}</h2>
             <div className={styles.section}>
                 {ingredients.map((ingredient:Ingredient)=>{
                     return <BurgerIngredientsItem
-                        onClick={onClick}
                         ingredient={ingredient}
                         count={1}
                         key={ingredient._id}/>

@@ -4,24 +4,25 @@ import {CloseIcon} from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from './modal.module.css'
 import PropTypes from 'prop-types';
 import {useEffect} from "react";
+import {useAppDispatch} from "../../hooks/redux";
+import {appReducer} from "../../store/reducers/ingredientsSlice";
 
 interface ModalProps {
     title?: string
     children: JSX.Element
-    onHideClick: () => void
 }
 
 Modal.propTypes = {
     title: PropTypes.string,
     children: PropTypes.element,
-    onHideClick: PropTypes.func
 }
 
-export default function Modal({title = '', children, onHideClick}: ModalProps) {
+export default function Modal({title = '', children}: ModalProps) {
+    const dispatch = useAppDispatch()
 
     const onEscapeClick = (event: KeyboardEvent): void => {
         if (event.key === 'Escape') {
-            onHideClick()
+            dispatch(appReducer.actions.hideClick())
         }
     }
 
@@ -30,17 +31,17 @@ export default function Modal({title = '', children, onHideClick}: ModalProps) {
         return () => {
             window.document.removeEventListener('keydown', onEscapeClick)
         }
-    }, [onHideClick]);
+    }, [onEscapeClick]);
 
     return ReactDOM.createPortal(
         (
             <div>
-                <ModalOverlay onHideClick={onHideClick}/>
+                <ModalOverlay onHideClick={()=>dispatch(appReducer.actions.hideClick())}/>
                 <div className={styles.popup}>
                     <div>
                         <div className={`ml-10 mr-10 ${styles.header}`}>
                             <h4 className={`text text_type_main-large `}>{title}</h4>
-                            <CloseIcon type={'primary'} onClick={onHideClick}/>
+                            <CloseIcon type={'primary'} onClick={() => dispatch(appReducer.actions.hideClick())}/>
                         </div>
                         {children}
                     </div>
