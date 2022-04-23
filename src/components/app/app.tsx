@@ -8,7 +8,7 @@ import Modal from "../modal/modal";
 import IngredientDetails from "../burger-ingredients/ingredient-details/ingredient-details";
 import OrderDetails from "../burger-constructor/order-details/order-details";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
-import {fetchIngredients} from "../../store/reducers/ActionCreators";
+import {fetchIngredients} from "../../store/actions/ActionCreators";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import {appReducer} from "../../store/reducers/ingredientsSlice";

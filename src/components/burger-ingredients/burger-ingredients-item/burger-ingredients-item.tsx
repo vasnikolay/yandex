@@ -18,14 +18,17 @@ BurgerIngredientsItem.propTypes = {
 }
 
 export default function BurgerIngredientsItem ({ingredient,count}: BurgerIngredientsItemProps){
-    const [, dragRef] = useDrag({
+    const [{ opacity }, dragRef] = useDrag({
         type: "ingredient",
         item: ingredient,
+        collect: monitor => ({
+            opacity: monitor.isDragging() ? 0.5 : 1
+        })
     });
     const dispatch = useAppDispatch()
 
     return(
-        <div ref={dragRef} className={`${styles.item} pb-8`} onClick={()=>dispatch(appReducer.actions.ingredientClick(ingredient))}>
+        <div ref={dragRef} className={`${styles.item} pb-8`} style={{ opacity }} onClick={()=>dispatch(appReducer.actions.ingredientClick(ingredient))}>
             {ingredient.__v ? <Counter count={ingredient.__v} size="default"/>:null}
             <img src={ingredient.image} alt={ingredient.name}/>
             <div className={`${styles.price} pt-1 pb-1`}>

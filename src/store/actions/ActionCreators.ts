@@ -1,6 +1,6 @@
 import {AppDispatch} from "../store";
 import axios from "axios";
-import {appReducer} from "./ingredientsSlice";
+import {appReducer} from "../reducers/ingredientsSlice";
 
 const baseUrl = 'https://norma.nomoreparties.space/api'
 
